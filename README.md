@@ -16,7 +16,7 @@ $ tree $HOME/data/imagenet -L 1
 You may use [kaggle /imagenet-object-localization-challenge dataset](https://www.kaggle.com/competitions/imagenet-object-localization-challenge/data)
 to download ImageNet dataset.
 
-`test` set is not used in this repository. Use `scripts/valprep.sh` if you need to preprocess `val` set.
+`test` set is not used in this repository. Use [scripts/valprep.sh](scripts/valprep.sh) if you need to preprocess `val` set.
 
 ## Prepare Docker container
 
