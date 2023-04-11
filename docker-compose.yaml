@@ -1,0 +1,11 @@
+version: "2.3"
+services:
+  dev:
+    runtime: nvidia
+    build:
+      context: .
+    volumes:
+      - ${PWD}:/work
+      - ${HOME}/data/imagenet:/work/data
+    tty: true
+    ipc: host
