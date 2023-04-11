@@ -23,3 +23,13 @@ to download ImageNet dataset.
 ```
 $ docker compose run --rm dev bash
 ```
+
+## Evaluate timm models
+
+With CUDA:
+
+```
+$ python tools/validate.py /work/data/ --model efficientnet_lite0
+
+ * Acc@1 75.476 (24.524) Acc@5 92.522 (7.478)
+```

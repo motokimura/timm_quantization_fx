@@ -1,7 +1,6 @@
 # reference:
 # https://github.com/huggingface/pytorch-image-models/blob/v0.4.12/validate.py
 
-#!/usr/bin/env python3
 """ ImageNet Validation Script
 
 This is intended to be a lean and easily modifiable ImageNet validation script for evaluating pretrained
