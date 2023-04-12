@@ -110,6 +110,8 @@ parser.add_argument('--real-labels', default='', type=str, metavar='FILENAME',
                     help='Real labels JSON file for imagenet evaluation')
 parser.add_argument('--valid-labels', default='', type=str, metavar='FILENAME',
                     help='Valid label indices txt file for validation of partial label space')
+parser.add_argument('--force-cpu', dest='force_cpu', action='store_true',
+                    help='Forcibly run inference on CPU')
 
 
 def validate(args):
@@ -163,7 +165,8 @@ def validate(args):
         torch.jit.optimized_execution(True)
         model = torch.jit.script(model)
 
-    model = model.cuda()
+    if not args.force_cpu:
+        model = model.cuda()
     if args.apex_amp:
         model = amp.initialize(model, opt_level='O1')
 
@@ -173,7 +176,9 @@ def validate(args):
     if args.num_gpu > 1:
         model = torch.nn.DataParallel(model, device_ids=list(range(args.num_gpu)))
 
-    criterion = nn.CrossEntropyLoss().cuda()
+    criterion = nn.CrossEntropyLoss()
+    if not args.force_cpu:
+        criterion = criterion.cuda()
 
     dataset = create_dataset(
         root=args.data, name=args.dataset, split=args.split,
@@ -216,14 +221,21 @@ def validate(args):
         input = torch.randn((args.batch_size,) + tuple(data_config['input_size'])).cuda()
         if args.channels_last:
             input = input.contiguous(memory_format=torch.channels_last)
+        if args.force_cpu:
+            input = input.cpu()
         model(input)
+
         end = time.time()
         for batch_idx, (input, target) in enumerate(loader):
-            if args.no_prefetcher:
+            if args.no_prefetcher and not args.force_cpu:
                 target = target.cuda()
                 input = input.cuda()
             if args.channels_last:
                 input = input.contiguous(memory_format=torch.channels_last)
+
+            if args.force_cpu:
+                target = target.cpu()
+                input = input.cpu()
 
             # compute output
             with amp_autocast():
