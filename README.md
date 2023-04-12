@@ -24,12 +24,38 @@ to download ImageNet dataset.
 $ docker compose run --rm dev bash
 ```
 
-## Evaluate timm models
+## Evaluate float models
 
-With CUDA:
+Evaluate float model with CUDA:
 
 ```
 $ python tools/validate.py /work/data/ --model efficientnet_lite0
 
- * Acc@1 75.476 (24.524) Acc@5 92.522 (7.478)
+ * Acc@1 75.480 (24.520) Acc@5 92.518 (7.482)
 ```
+
+Evaluate float model with CPU:
+
+```
+$ python tools/validate.py /work/data/ --model efficientnet_lite0 --force-cpu
+
+ * Acc@1 75.472 (24.528) Acc@5 92.520 (7.480)
+```
+
+## Evaluate quantized models
+
+Prepare caliblation data:
+
+```
+$ python tools/prep_calib.py /work/data/
+```
+
+Evaluate quantized model with CPU:
+
+```
+$ python tools/validate.py /work/data/ --model efficientnet_lite0 --quant
+
+ * Acc@1 70.108 (29.892) Acc@5 89.432 (10.568)
+```
+
+Note that quantized model runs in CPU mode because Pytorch quantization does not support CUDA inference.

@@ -40,6 +40,10 @@ except AttributeError:
     pass
 
 torch.backends.cudnn.benchmark = True
+
+qutntization_backend = 'fbgemm'
+torch.backends.quantized.engine = qutntization_backend
+
 _logger = logging.getLogger('validate')
 
 
@@ -110,8 +114,50 @@ parser.add_argument('--real-labels', default='', type=str, metavar='FILENAME',
                     help='Real labels JSON file for imagenet evaluation')
 parser.add_argument('--valid-labels', default='', type=str, metavar='FILENAME',
                     help='Valid label indices txt file for validation of partial label space')
-parser.add_argument('--force-cpu', dest='force_cpu', action='store_true',
+parser.add_argument('--force-cpu', action='store_true',
                     help='Forcibly run inference on CPU')
+parser.add_argument('-cb', '--calib-batch-size', default=64, type=int,
+                    metavar='N', help='mini-batch size for caliblation (default: 64)')
+parser.add_argument('--quant', dest='quantize', action='store_true',
+                    help='Quantize model')
+
+
+def quantize(model, args, data_config, crop_pct):
+    from torch.quantization import get_default_qconfig, quantize_fx
+
+    dataset = create_dataset(
+        root=args.data, name=args.dataset, split='calib',
+        load_bytes=args.tf_preprocessing, class_map=args.class_map)
+
+    loader = create_loader(
+        dataset,
+        input_size=data_config['input_size'],
+        batch_size=args.calib_batch_size,  # too big batch size (e.g., 512) leads to non-deterministic result
+        use_prefetcher=args.prefetcher,
+        interpolation=data_config['interpolation'],
+        mean=data_config['mean'],
+        std=data_config['std'],
+        num_workers=args.workers,
+        crop_pct=crop_pct,
+        pin_memory=args.pin_mem,
+        tf_preprocessing=args.tf_preprocessing)
+    
+    qconfig = {"": get_default_qconfig(qutntization_backend)}
+    model = quantize_fx.prepare_fx(model.eval(), qconfig)
+
+    for batch_idx, (input, target) in enumerate(loader):
+        if args.channels_last:
+            input = input.contiguous(memory_format=torch.channels_last)
+
+        target = target.cpu()
+        input = input.cpu()
+
+        # compute output
+        with torch.no_grad():
+            output = model(input)
+
+    model = quantize_fx.convert_fx(model.eval())
+    return model
 
 
 def validate(args):
@@ -165,6 +211,10 @@ def validate(args):
         torch.jit.optimized_execution(True)
         model = torch.jit.script(model)
 
+    if args.quantize and not args.force_cpu:
+        args.force_cpu = True
+        _logger.warning('PyTorch quantization does not support CUDA inference. Running inference in CPU mode.')
+
     if not args.force_cpu:
         model = model.cuda()
     if args.apex_amp:
@@ -209,6 +259,11 @@ def validate(args):
         crop_pct=crop_pct,
         pin_memory=args.pin_mem,
         tf_preprocessing=args.tf_preprocessing)
+    
+    if args.quantize:
+        _logger.info('Quantizin model...')
+        model = quantize(model, args, data_config, crop_pct)
+        _logger.info('Done quantization.')
 
     batch_time = AverageMeter()
     losses = AverageMeter()
