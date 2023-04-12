@@ -114,6 +114,8 @@ parser.add_argument('--real-labels', default='', type=str, metavar='FILENAME',
                     help='Real labels JSON file for imagenet evaluation')
 parser.add_argument('--valid-labels', default='', type=str, metavar='FILENAME',
                     help='Valid label indices txt file for validation of partial label space')
+parser.add_argument('--replace-relu6', action='store_true',
+                    help='Replace ReLU6 with ReLU activation')
 parser.add_argument('--force-cpu', action='store_true',
                     help='Forcibly run inference on CPU')
 parser.add_argument('-cb', '--calib-batch-size', default=64, type=int,
@@ -158,6 +160,20 @@ def quantize(model, args, data_config, crop_pct):
 
     model = quantize_fx.convert_fx(model.eval())
     return model
+
+
+def replace_relu6(model):
+    reassign = {}
+    for name, mod in model.named_children():
+        replace_relu6(mod)
+        # Checking for explicit type instead of instance
+        # as we only want to replace modules of the exact type
+        # not inherited classes
+        if type(mod) == nn.ReLU or type(mod) == nn.ReLU6:
+            reassign[name] = nn.ReLU(inplace=False)
+
+    for key, value in reassign.items():
+        model._modules[key] = value
 
 
 def validate(args):
@@ -260,8 +276,11 @@ def validate(args):
         pin_memory=args.pin_mem,
         tf_preprocessing=args.tf_preprocessing)
     
+    if args.replace_relu6:
+        replace_relu6(model)
+
     if args.quantize:
-        _logger.info('Quantizin model...')
+        _logger.info('Quantizing model...')
         model = quantize(model, args, data_config, crop_pct)
         _logger.info('Done quantization.')
 
