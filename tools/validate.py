@@ -125,6 +125,7 @@ parser.add_argument('--quant', dest='quantize', action='store_true',
 parser.add_argument('-sa', '--sensitivity', dest='sensitivity_analysis', action='store_true',
                     help='Run sensitivity analysis')
 parser.add_argument('--layers-quantized', nargs='*', default=[])
+parser.add_argument('--layers-not-quantized', nargs='*', default=[])
 
 
 def quantize(model, args, data_config, crop_pct):
@@ -146,15 +147,20 @@ def quantize(model, args, data_config, crop_pct):
         crop_pct=crop_pct,
         pin_memory=args.pin_mem,
         tf_preprocessing=args.tf_preprocessing)
-
+    
+    qconfig = {
+        '': get_default_qconfig(qutntization_backend),
+    }
+    assert len(args.layers_quantized) == 0 or len(args.layers_not_quantized) == 0
     if len(args.layers_quantized) > 0:
         qconfig = {
             '': None,
             'module_name': [(layer_name, get_default_qconfig(qutntization_backend)) for layer_name in args.layers_quantized],
         }
-    else:
+    if len(args.layers_not_quantized) > 0:
         qconfig = {
             '': get_default_qconfig(qutntization_backend),
+            'module_name': [(layer_name, None) for layer_name in args.layers_not_quantized],
         }
     _logger.info(f'qconfig={qconfig}')
     model = quantize_fx.prepare_fx(model.eval(), qconfig)
@@ -376,6 +382,7 @@ def validate(args):
 
 def main_sensitivity_analysis(args):
     assert len(args.layers_quantized) == 0
+    assert len(args.layers_not_quantized) == 0
 
     # get target layer names
     model = create_model(
