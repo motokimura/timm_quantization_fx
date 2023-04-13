@@ -122,6 +122,9 @@ parser.add_argument('-cb', '--calib-batch-size', default=64, type=int,
                     metavar='N', help='mini-batch size for caliblation (default: 64)')
 parser.add_argument('--quant', dest='quantize', action='store_true',
                     help='Quantize model')
+parser.add_argument('-sa', '--sensitivity', dest='sensitivity_analysis', action='store_true',
+                    help='Run sensitivity analysis')
+parser.add_argument('--layers-quantized', nargs='*', default=[])
 
 
 def quantize(model, args, data_config, crop_pct):
@@ -143,8 +146,17 @@ def quantize(model, args, data_config, crop_pct):
         crop_pct=crop_pct,
         pin_memory=args.pin_mem,
         tf_preprocessing=args.tf_preprocessing)
-    
-    qconfig = {"": get_default_qconfig(qutntization_backend)}
+
+    if len(args.layers_quantized) > 0:
+        qconfig = {
+            '': None,
+            'module_name': [(layer_name, get_default_qconfig(qutntization_backend)) for layer_name in args.layers_quantized],
+        }
+    else:
+        qconfig = {
+            '': get_default_qconfig(qutntization_backend),
+        }
+    _logger.info(f'qconfig={qconfig}')
     model = quantize_fx.prepare_fx(model.eval(), qconfig)
 
     for batch_idx, (input, target) in enumerate(loader):
@@ -275,7 +287,7 @@ def validate(args):
         crop_pct=crop_pct,
         pin_memory=args.pin_mem,
         tf_preprocessing=args.tf_preprocessing)
-    
+
     if args.replace_relu6:
         replace_relu6(model)
 
@@ -362,9 +374,36 @@ def validate(args):
     return results
 
 
-def main():
-    setup_default_logging()
-    args = parser.parse_args()
+def main_sensitivity_analysis(args):
+    assert len(args.layers_quantized) == 0
+
+    # get target layer names
+    model = create_model(
+        args.model,
+        pretrained=args.pretrained,
+        num_classes=args.num_classes,
+        in_chans=3,
+        global_pool=args.gp,
+        scriptable=args.torchscript)
+    layer_names = []
+    for name, layer in model.named_modules():
+        if isinstance(layer, nn.modules.Conv2d) or isinstance(layer, nn.Linear) or isinstance(layer, nn.ReLU6):
+            layer_names.append(name)
+    del model
+    _logger.info(f'Target layers of sensitivity analysis: {layer_names}')
+
+    args.quantize = True
+    results = []
+    for layer_idx, layer_quantized in enumerate(layer_names):
+        _logger.info(f'Running sensitivity analysis of layer: {layer_idx}/{len(layer_names)} ..')
+        args.layers_quantized = [layer_quantized]
+        r = validate(args)
+        r['layer_quantized'] = layer_quantized
+        results.append(r)
+        write_results('sa.csv', results)
+
+
+def main_validate(args):
     model_cfgs = []
     model_names = []
     if os.path.isdir(args.checkpoint):
@@ -419,6 +458,15 @@ def main():
             write_results(results_file, results)
     else:
         validate(args)
+
+
+def main():
+    setup_default_logging()
+    args = parser.parse_args()
+    if args.sensitivity_analysis:
+        main_sensitivity_analysis(args)
+    else:
+        main_validate(args)
 
 
 def write_results(results_file, results):
