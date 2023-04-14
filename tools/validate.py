@@ -13,6 +13,7 @@ import argparse
 import os
 import csv
 import glob
+import json
 import time
 import logging
 import torch
@@ -122,8 +123,8 @@ parser.add_argument('-cb', '--calib-batch-size', default=64, type=int,
                     metavar='N', help='mini-batch size for caliblation (default: 64)')
 parser.add_argument('--quant', dest='quantize', action='store_true',
                     help='Quantize model')
-parser.add_argument('-sa', '--sensitivity', dest='sensitivity_analysis', action='store_true',
-                    help='Run sensitivity analysis')
+parser.add_argument('-sa', '--sensitivity-analysis-targets', default=None,
+                    help='Path to a JSON file describing sensitivity analysis target layer names')
 parser.add_argument('--layers-quantized', nargs='*', default=[])
 parser.add_argument('--layers-not-quantized', nargs='*', default=[])
 
@@ -384,30 +385,20 @@ def main_sensitivity_analysis(args):
     assert len(args.layers_quantized) == 0
     assert len(args.layers_not_quantized) == 0
 
-    # get target layer names
-    model = create_model(
-        args.model,
-        pretrained=args.pretrained,
-        num_classes=args.num_classes,
-        in_chans=3,
-        global_pool=args.gp,
-        scriptable=args.torchscript)
-    layer_names = []
-    for name, layer in model.named_modules():
-        if isinstance(layer, nn.modules.Conv2d) or isinstance(layer, nn.Linear) or isinstance(layer, nn.ReLU6):
-            layer_names.append(name)
-    del model
-    _logger.info(f'Target layers of sensitivity analysis: {layer_names}')
+    with open(args.sensitivity_analysis_targets) as f:
+        layers_quantized_list = json.load(f)['layers_quantized']
+
+    _logger.info(f'Target layers of sensitivity analysis: {layers_quantized_list}')
 
     args.quantize = True
     results = []
-    for layer_idx, layer_quantized in enumerate(layer_names):
-        _logger.info(f'Running sensitivity analysis of layer: {layer_idx}/{len(layer_names)} ..')
-        args.layers_quantized = [layer_quantized]
+    for idx, layers_quantized in enumerate(layers_quantized_list):
+        _logger.info(f'Running sensitivity analysis of layer: {idx + 1}/{len(layers_quantized_list)} ..')
+        args.layers_quantized = layers_quantized
         r = validate(args)
-        r['layer_quantized'] = layer_quantized
+        r['layers_quantized'] = layers_quantized
         results.append(r)
-        write_results('sa.csv', results)
+        write_results(f'sensitivity_analysis_{args.model}.csv', results)
 
 
 def main_validate(args):
@@ -470,7 +461,7 @@ def main_validate(args):
 def main():
     setup_default_logging()
     args = parser.parse_args()
-    if args.sensitivity_analysis:
+    if args.sensitivity_analysis_targets is not None:
         main_sensitivity_analysis(args)
     else:
         main_validate(args)

@@ -59,3 +59,14 @@ $ python tools/validate.py /work/data/ --model efficientnet_lite0 --quant
 ```
 
 Note that quantized model runs in CPU mode because Pytorch quantization does not support CUDA inference.
+
+## Sensitivity analysis
+
+```
+python tools/validate.py /work/data/ --model efficientnet_lite0 -sa sensitivity_analysis_targets/efficientnet_lite0.json
+```
+
+See `sensitivity_analysis_efficientnet_lite0.csv` for the result.
+
+## Partial quantization
+
