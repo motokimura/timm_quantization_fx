@@ -16,6 +16,7 @@ import glob
 import json
 import time
 import logging
+import pandas as pd
 import torch
 import torch.nn as nn
 import torch.nn.parallel
@@ -119,14 +120,20 @@ parser.add_argument('--replace-relu6', action='store_true',
                     help='Replace ReLU6 with ReLU activation')
 parser.add_argument('--force-cpu', action='store_true',
                     help='Forcibly run inference on CPU')
-parser.add_argument('-cb', '--calib-batch-size', default=64, type=int,
-                    metavar='N', help='mini-batch size for caliblation (default: 64)')
+
 parser.add_argument('--quant', dest='quantize', action='store_true',
                     help='Quantize model')
-parser.add_argument('-sa', '--sensitivity-analysis-targets', default=None,
-                    help='Path to a JSON file describing sensitivity analysis target layer names')
 parser.add_argument('--layers-quantized', nargs='*', default=[])
 parser.add_argument('--layers-not-quantized', nargs='*', default=[])
+parser.add_argument('-cb', '--calib-batch-size', default=64, type=int,
+                    metavar='N', help='mini-batch size for caliblation (default: 64)')
+
+parser.add_argument('-sa', '--sensitivity-analysis-targets', default=None,
+                    help='Path to a JSON file describing sensitivity analysis target layer names')
+parser.add_argument('-pq', '--partial-quantization', default=None,
+                    help='Run partial quantization based on the specified sensitivity analysis result')
+parser.add_argument('--worst-n', type=int, default=10,
+                    help='Target of partial quantization')
 
 
 def quantize(model, args, data_config, crop_pct):
@@ -386,19 +393,44 @@ def main_sensitivity_analysis(args):
     assert len(args.layers_not_quantized) == 0
 
     with open(args.sensitivity_analysis_targets) as f:
-        layers_quantized_list = json.load(f)['layers_quantized']
+        target_layers_list = json.load(f)['layers_quantized']
 
-    _logger.info(f'Target layers of sensitivity analysis: {layers_quantized_list}')
+    _logger.info(f'Target layers of sensitivity analysis: {target_layers_list}')
 
     args.quantize = True
     results = []
-    for idx, layers_quantized in enumerate(layers_quantized_list):
-        _logger.info(f'Running sensitivity analysis of layer: {idx + 1}/{len(layers_quantized_list)} ..')
-        args.layers_quantized = layers_quantized
+    for idx, target_layers in enumerate(target_layers_list):
+        _logger.info(f'Running sensitivity analysis of layer: {idx + 1}/{len(target_layers_list)} ..')
+        args.layers_quantized = target_layers
         r = validate(args)
-        r['layers_quantized'] = layers_quantized
+        r['layers_quantized'] = target_layers
         results.append(r)
         write_results(f'sensitivity_analysis_{args.model}.csv', results)
+
+
+def main_partial_quantization(args):
+    assert len(args.layers_quantized) == 0
+    assert len(args.layers_not_quantized) == 0
+
+    sa_df = pd.read_csv(args.partial_quantization)
+    sa_df = sa_df.sort_values(by='top1').reset_index()
+
+    target_layers_list = list(sa_df.layers_quantized)
+    target_layers_list = [eval(x) for x in target_layers_list]
+    target_layers_list = target_layers_list[:args.worst_n]
+    target_layers_list.insert(0, [])
+
+    args.quantize = True
+    layers_not_quantized = []
+    results = []
+    for idx, target_layers in enumerate(target_layers_list):
+        _logger.info(f'Running partial quantization of layer: {idx + 1}/{len(target_layers_list)} ..')
+        layers_not_quantized.extend(target_layers)
+        args.layers_not_quantized = layers_not_quantized
+        r = validate(args)
+        r['layers_not_quantized'] = target_layers
+        results.append(r)
+        write_results(f'partial_quantization_{args.model}.csv', results)
 
 
 def main_validate(args):
@@ -463,6 +495,8 @@ def main():
     args = parser.parse_args()
     if args.sensitivity_analysis_targets is not None:
         main_sensitivity_analysis(args)
+    elif args.partial_quantization is not None:
+        main_partial_quantization(args)
     else:
         main_validate(args)
 

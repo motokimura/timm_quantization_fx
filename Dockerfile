@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
 RUN conda clean --all
 
 # install dependencies
-RUN pip install timm==0.4.12
+RUN pip install timm==0.4.12 pandas matplotlib
 
 ENV PYTHONPATH=/work
 
