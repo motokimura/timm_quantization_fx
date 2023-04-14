@@ -78,6 +78,8 @@ See `partial_quantization_efficientnet_lite0.csv` for the result.
 
 ## Plot result of sensitivity analysis and partial quantization
 
+```
 python tools/plot_result.py -sa sensitivity_analysis_efficientnet_lite0.csv -pq partial_quantization_efficientnet_lite0.csv -ba 75.480
+```
 
 ![](plot.png)
