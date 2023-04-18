@@ -171,7 +171,10 @@ def quantize(model, args, data_config, crop_pct):
             'module_name': [(layer_name, None) for layer_name in args.layers_not_quantized],
         }
     _logger.info(f'qconfig={qconfig}')
-    model = quantize_fx.prepare_fx(model.eval(), qconfig)
+    example_inputs = torch.zeros((args.batch_size,) + tuple(data_config['input_size']))
+    model = quantize_fx.prepare_fx(model.eval(), qconfig, example_inputs=example_inputs)
+
+    #print(model)
 
     for batch_idx, (input, target) in enumerate(loader):
         if args.channels_last:
