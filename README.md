@@ -33,7 +33,7 @@ Evaluate float model with CUDA:
 ```
 $ python tools/validate.py /work/data/ --model efficientnet_lite0
 
- * Acc@1 75.480 (24.520) Acc@5 92.518 (7.482)
+ * Acc@1 75.482 (24.518) Acc@5 92.520 (7.480)
 ```
 
 Evaluate float model with CPU:
@@ -57,7 +57,7 @@ Evaluate quantized model with CPU:
 ```
 $ python tools/validate.py /work/data/ --model efficientnet_lite0 --quant
 
- * Acc@1 70.108 (29.892) Acc@5 89.432 (10.568)
+ * Acc@1 70.000 (30.000) Acc@5 89.282 (10.718)
 ```
 
 Note that quantized model runs in CPU mode because Pytorch quantization does not support CUDA inference.
@@ -81,7 +81,7 @@ See `partial_quantization_efficientnet_lite0.csv` for the result.
 ### Plot result of sensitivity analysis and partial quantization
 
 ```
-python tools/plot_result.py -sa sensitivity_analysis_efficientnet_lite0.csv -pq partial_quantization_efficientnet_lite0.csv -ba 75.480
+python tools/plot_result.py -sa sensitivity_analysis_efficientnet_lite0.csv -pq partial_quantization_efficientnet_lite0.csv -ba 75.482
 ```
 
 ![](plot.png)
