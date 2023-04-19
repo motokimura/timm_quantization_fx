@@ -65,23 +65,45 @@ Note that quantized model runs in CPU mode because Pytorch quantization does not
 ### Sensitivity analysis
 
 ```
-python tools/validate.py /work/data/ --model efficientnet_lite0 -sa sensitivity_analysis_targets/efficientnet_lite0.json
+python tools/validate.py /work/data/ --model efficientnet_lite0 -sa examples/efficientnet_lite0/target_layers.json
 ```
 
-See `sensitivity_analysis_efficientnet_lite0.csv` for the result.
+Result is saved as `result_sensitivity_analysis.csv`.
+See [examples/efficientnet_lite0/result_sensitivity_analysis.csv](examples/efficientnet_lite0/result_sensitivity_analysis.csv) for an example.
 
 ### Partial quantization
 
 ```
-python tools/validate.py /work/data/ --model efficientnet_lite0 -pq sensitivity_analysis_efficientnet_lite0.csv
+python tools/validate.py /work/data/ --model efficientnet_lite0 -pq result_sensitivity_analysis.csv
 ```
 
-See `partial_quantization_efficientnet_lite0.csv` for the result.
+Result is saved as `result_partial_quantization.csv`.
+See [examples/efficientnet_lite0/result_partial_quantization.csv](examples/efficientnet_lite0/result_partial_quantization.csv) for an example.
+
+Note that the metrics (top-1, top1_err, top-5, etc.) in `result_partial_quantization.csv` are by cumulative ablation.
+If CSV looks like below, you'll get top1=74.646 when **all** of 'blocks.0.0.conv_dw', 'blocks.0.0.act1', 'conv_stem', 'act1', 'blocks.1.0.conv_pw', and 'blocks.1.0.act1' layers are excludede from quantization.
+
+```csv
+top1,top1_err,top5,top5_err,param_count,img_size,cropt_pct,interpolation,layers_not_quantized
+70.0,30.0,89.282,10.718,4.65,224,0.875,bicubic,[]
+71.784,28.216,90.426,9.574,4.65,224,0.875,bicubic,"['blocks.0.0.conv_dw', 'blocks.0.0.act1']"
+73.956,26.044,91.572,8.428,4.65,224,0.875,bicubic,"['conv_stem', 'act1']"
+74.646,25.354,92.154,7.846,4.65,224,0.875,bicubic,"['blocks.1.0.conv_pw', 'blocks.1.0.act1']"
+.
+.
+.
+```
+
+To reproduce top1=74.646:
+
+```
+python tools/validate.py /work/data/ --model efficientnet_lite0 --quant --layers-not-quantized 'blocks.0.0.conv_dw' 'blocks.0.0.act1' 'conv_stem' 'act1' 'blocks.1.0.conv_pw' 'blocks.1.0.act1'
+```
 
 ### Plot result of sensitivity analysis and partial quantization
 
 ```
-python tools/plot_result.py -sa sensitivity_analysis_efficientnet_lite0.csv -pq partial_quantization_efficientnet_lite0.csv -ba 75.482
+python tools/plot_result.py -sa result_sensitivity_analysis.csv -pq result_partial_quantization.csv -ba 75.482
 ```
 
-![](plot.png)
+![](examples/efficientnet_lite0/plot.png)

@@ -412,7 +412,7 @@ def main_sensitivity_analysis(args):
         r = validate(args)
         r['layers_quantized'] = target_layers
         results.append(r)
-        write_results(f'sensitivity_analysis_{args.model}.csv', results)
+        write_results(f'result_sensitivity_analysis.csv', results)
 
 
 def main_partial_quantization(args):
@@ -437,7 +437,7 @@ def main_partial_quantization(args):
         r = validate(args)
         r['layers_not_quantized'] = target_layers
         results.append(r)
-        write_results(f'partial_quantization_{args.model}.csv', results)
+        write_results(f'result_partial_quantization.csv', results)
 
 
 def main_validate(args):
