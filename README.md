@@ -9,12 +9,12 @@ mobilenetv2_100 | 72.972 | 66.342
 mobilenetv3_large_100 | 75.776 | 65.420
 efficientnet_lite0 | 75.482 | 70.000
 
-Currntly only the static post-training quantization is supported.
-
 Sensitivity analysis (and partial quantization) example is also provided.
 The figure below shows per-layer sensitivity analysis result of efficientnet_lite0 model.
 
 ![](examples/efficientnet_lite0/plot.png)
+
+Only the static post-training quantization is supported in this repository.
 
 ## Setup
 
