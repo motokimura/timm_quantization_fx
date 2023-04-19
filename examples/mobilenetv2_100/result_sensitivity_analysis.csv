@@ -1,0 +1,54 @@
+top1,top1_err,top5,top5_err,param_count,img_size,cropt_pct,interpolation,layers_quantized
+70.29,29.71,89.24,10.76,3.5,224,0.875,bicubic,"['conv_stem', 'act1']"
+71.518,28.482,90.146,9.854,3.5,224,0.875,bicubic,"['blocks.0.0.conv_dw', 'blocks.0.0.act1']"
+72.948,27.052,90.984,9.016,3.5,224,0.875,bicubic,['blocks.0.0.conv_pw']
+72.026,27.974,90.338,9.662,3.5,224,0.875,bicubic,"['blocks.1.0.conv_pw', 'blocks.1.0.act1']"
+72.846,27.154,90.938,9.062,3.5,224,0.875,bicubic,"['blocks.1.0.conv_dw', 'blocks.1.0.act2']"
+72.908,27.092,90.98,9.02,3.5,224,0.875,bicubic,['blocks.1.0.conv_pwl']
+72.888,27.112,90.968,9.032,3.5,224,0.875,bicubic,"['blocks.1.1.conv_pw', 'blocks.1.1.act1']"
+72.924,27.076,90.992,9.008,3.5,224,0.875,bicubic,"['blocks.1.1.conv_dw', 'blocks.1.1.act2']"
+72.958,27.042,90.986,9.014,3.5,224,0.875,bicubic,['blocks.1.1.conv_pwl']
+72.91,27.09,91.004,8.996,3.5,224,0.875,bicubic,"['blocks.2.0.conv_pw', 'blocks.2.0.act1']"
+72.904,27.096,90.96,9.04,3.5,224,0.875,bicubic,"['blocks.2.0.conv_dw', 'blocks.2.0.act2']"
+72.94,27.06,91.03,8.97,3.5,224,0.875,bicubic,['blocks.2.0.conv_pwl']
+72.896,27.104,91.006,8.994,3.5,224,0.875,bicubic,"['blocks.2.1.conv_pw', 'blocks.2.1.act1']"
+72.968,27.032,91.006,8.994,3.5,224,0.875,bicubic,"['blocks.2.1.conv_dw', 'blocks.2.1.act2']"
+72.914,27.086,91.018,8.982,3.5,224,0.875,bicubic,['blocks.2.1.conv_pwl']
+72.918,27.082,90.998,9.002,3.5,224,0.875,bicubic,"['blocks.2.2.conv_pw', 'blocks.2.2.act1']"
+72.95,27.05,90.99,9.01,3.5,224,0.875,bicubic,"['blocks.2.2.conv_dw', 'blocks.2.2.act2']"
+72.956,27.044,91.006,8.994,3.5,224,0.875,bicubic,['blocks.2.2.conv_pwl']
+72.944,27.056,91.02,8.98,3.5,224,0.875,bicubic,"['blocks.3.0.conv_pw', 'blocks.3.0.act1']"
+72.93,27.07,91.028,8.972,3.5,224,0.875,bicubic,"['blocks.3.0.conv_dw', 'blocks.3.0.act2']"
+72.868,27.132,91.05,8.95,3.5,224,0.875,bicubic,['blocks.3.0.conv_pwl']
+72.948,27.052,91.004,8.996,3.5,224,0.875,bicubic,"['blocks.3.1.conv_pw', 'blocks.3.1.act1']"
+72.946,27.054,90.966,9.034,3.5,224,0.875,bicubic,"['blocks.3.1.conv_dw', 'blocks.3.1.act2']"
+72.966,27.034,91.014,8.986,3.5,224,0.875,bicubic,['blocks.3.1.conv_pwl']
+72.894,27.106,90.996,9.004,3.5,224,0.875,bicubic,"['blocks.3.2.conv_pw', 'blocks.3.2.act1']"
+72.932,27.068,91.008,8.992,3.5,224,0.875,bicubic,"['blocks.3.2.conv_dw', 'blocks.3.2.act2']"
+72.918,27.082,91.004,8.996,3.5,224,0.875,bicubic,['blocks.3.2.conv_pwl']
+72.912,27.088,91.03,8.97,3.5,224,0.875,bicubic,"['blocks.3.3.conv_pw', 'blocks.3.3.act1']"
+72.958,27.042,91.014,8.986,3.5,224,0.875,bicubic,"['blocks.3.3.conv_dw', 'blocks.3.3.act2']"
+72.958,27.042,91.014,8.986,3.5,224,0.875,bicubic,['blocks.3.3.conv_pwl']
+72.904,27.096,91.012,8.988,3.5,224,0.875,bicubic,"['blocks.4.0.conv_pw', 'blocks.4.0.act1']"
+72.924,27.076,91.032,8.968,3.5,224,0.875,bicubic,"['blocks.4.0.conv_dw', 'blocks.4.0.act2']"
+72.924,27.076,90.992,9.008,3.5,224,0.875,bicubic,['blocks.4.0.conv_pwl']
+72.924,27.076,90.992,9.008,3.5,224,0.875,bicubic,"['blocks.4.1.conv_pw', 'blocks.4.1.act1']"
+72.956,27.044,91.01,8.99,3.5,224,0.875,bicubic,"['blocks.4.1.conv_dw', 'blocks.4.1.act2']"
+72.982,27.018,91.002,8.998,3.5,224,0.875,bicubic,['blocks.4.1.conv_pwl']
+72.938,27.062,90.998,9.002,3.5,224,0.875,bicubic,"['blocks.4.2.conv_pw', 'blocks.4.2.act1']"
+72.916,27.084,90.984,9.016,3.5,224,0.875,bicubic,"['blocks.4.2.conv_dw', 'blocks.4.2.act2']"
+72.922,27.078,91.014,8.986,3.5,224,0.875,bicubic,['blocks.4.2.conv_pwl']
+72.942,27.058,90.996,9.004,3.5,224,0.875,bicubic,"['blocks.5.0.conv_pw', 'blocks.5.0.act1']"
+72.884,27.116,91.004,8.996,3.5,224,0.875,bicubic,"['blocks.5.0.conv_dw', 'blocks.5.0.act2']"
+72.884,27.116,90.994,9.006,3.5,224,0.875,bicubic,['blocks.5.0.conv_pwl']
+72.922,27.078,91.016,8.984,3.5,224,0.875,bicubic,"['blocks.5.1.conv_pw', 'blocks.5.1.act1']"
+72.896,27.104,91.008,8.992,3.5,224,0.875,bicubic,"['blocks.5.1.conv_dw', 'blocks.5.1.act2']"
+72.92,27.08,91.002,8.998,3.5,224,0.875,bicubic,['blocks.5.1.conv_pwl']
+72.946,27.054,91.022,8.978,3.5,224,0.875,bicubic,"['blocks.5.2.conv_pw', 'blocks.5.2.act1']"
+72.894,27.106,90.976,9.024,3.5,224,0.875,bicubic,"['blocks.5.2.conv_dw', 'blocks.5.2.act2']"
+72.932,27.068,90.996,9.004,3.5,224,0.875,bicubic,['blocks.5.2.conv_pwl']
+72.92,27.08,90.986,9.014,3.5,224,0.875,bicubic,"['blocks.6.0.conv_pw', 'blocks.6.0.act1']"
+72.862,27.138,91.02,8.98,3.5,224,0.875,bicubic,"['blocks.6.0.conv_dw', 'blocks.6.0.act2']"
+72.942,27.058,91.008,8.992,3.5,224,0.875,bicubic,['blocks.6.0.conv_pwl']
+72.956,27.044,91.006,8.994,3.5,224,0.875,bicubic,"['conv_head', 'act2']"
+73.014,26.986,90.982,9.018,3.5,224,0.875,bicubic,['classifier']
