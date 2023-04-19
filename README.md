@@ -65,7 +65,7 @@ Note that quantized model runs in CPU mode because Pytorch quantization does not
 ### Sensitivity analysis
 
 ```
-python tools/validate.py /work/data/ --model efficientnet_lite0 -sa examples/efficientnet_lite0/target_layers.json
+$ python tools/validate.py /work/data/ --model efficientnet_lite0 -sa examples/efficientnet_lite0/target_layers.json
 ```
 
 Result is saved as `result_sensitivity_analysis.csv`.
@@ -74,14 +74,14 @@ See [examples/efficientnet_lite0/result_sensitivity_analysis.csv](examples/effic
 ### Partial quantization
 
 ```
-python tools/validate.py /work/data/ --model efficientnet_lite0 -pq result_sensitivity_analysis.csv
+$ python tools/validate.py /work/data/ --model efficientnet_lite0 -pq result_sensitivity_analysis.csv
 ```
 
 Result is saved as `result_partial_quantization.csv`.
 See [examples/efficientnet_lite0/result_partial_quantization.csv](examples/efficientnet_lite0/result_partial_quantization.csv) for an example.
 
-Note that the metrics (top-1, top1_err, top-5, etc.) in `result_partial_quantization.csv` are by cumulative ablation.
-If CSV looks like below, you'll get top1=74.646 when **all** of 'blocks.0.0.conv_dw', 'blocks.0.0.act1', 'conv_stem', 'act1', 'blocks.1.0.conv_pw', and 'blocks.1.0.act1' layers are excludede from quantization.
+Note that the metrics (top1, top1_err, top5, etc.) in `result_partial_quantization.csv` are by cumulative ablation:
+if CSV looks like below, you'll get top1=74.646 when **all** of 'blocks.0.0.conv_dw', 'blocks.0.0.act1', 'conv_stem', 'act1', 'blocks.1.0.conv_pw', and 'blocks.1.0.act1' layers are excludede from quantization.
 
 ```csv
 top1,top1_err,top5,top5_err,param_count,img_size,cropt_pct,interpolation,layers_not_quantized
@@ -97,13 +97,15 @@ top1,top1_err,top5,top5_err,param_count,img_size,cropt_pct,interpolation,layers_
 To reproduce top1=74.646:
 
 ```
-python tools/validate.py /work/data/ --model efficientnet_lite0 --quant --layers-not-quantized 'blocks.0.0.conv_dw' 'blocks.0.0.act1' 'conv_stem' 'act1' 'blocks.1.0.conv_pw' 'blocks.1.0.act1'
+$ python tools/validate.py /work/data/ --model efficientnet_lite0 --quant --layers-not-quantized 'blocks.0.0.conv_dw' 'blocks.0.0.act1' 'conv_stem' 'act1' 'blocks.1.0.conv_pw' 'blocks.1.0.act1'
+
+ * Acc@1 74.646 (25.354) Acc@5 92.154 (7.846)
 ```
 
 ### Plot result of sensitivity analysis and partial quantization
 
 ```
-python tools/plot_result.py -sa result_sensitivity_analysis.csv -pq result_partial_quantization.csv -ba 75.482
+$ python tools/plot_result.py -sa result_sensitivity_analysis.csv -pq result_partial_quantization.csv -ba 75.482
 ```
 
 ![](examples/efficientnet_lite0/plot.png)
