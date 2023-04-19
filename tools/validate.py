@@ -116,6 +116,9 @@ parser.add_argument('--real-labels', default='', type=str, metavar='FILENAME',
                     help='Real labels JSON file for imagenet evaluation')
 parser.add_argument('--valid-labels', default='', type=str, metavar='FILENAME',
                     help='Valid label indices txt file for validation of partial label space')
+
+parser.add_argument('--print-model', action='store_true',
+                    help='Print model')
 parser.add_argument('--replace-relu6', action='store_true',
                     help='Replace ReLU6 with ReLU activation')
 parser.add_argument('--force-cpu', action='store_true',
@@ -173,8 +176,6 @@ def quantize(model, args, data_config, crop_pct):
     _logger.info(f'qconfig={qconfig}')
     example_inputs = torch.zeros((args.batch_size,) + tuple(data_config['input_size']))
     model = quantize_fx.prepare_fx(model.eval(), qconfig, example_inputs=example_inputs)
-
-    #print(model)
 
     for batch_idx, (input, target) in enumerate(loader):
         if args.channels_last:
@@ -312,6 +313,9 @@ def validate(args):
         _logger.info('Quantizing model...')
         model = quantize(model, args, data_config, crop_pct)
         _logger.info('Done quantization.')
+
+    if args.print_model:
+        print(model)
 
     batch_time = AverageMeter()
     losses = AverageMeter()
