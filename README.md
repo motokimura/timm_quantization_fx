@@ -16,7 +16,7 @@ $ tree $HOME/data/imagenet -L 1
 You may use [kaggle /imagenet-object-localization-challenge dataset](https://www.kaggle.com/competitions/imagenet-object-localization-challenge/data)
 to download ImageNet dataset.
 
-`test` set is not used in this repository. Use [scripts/valprep.sh](scripts/valprep.sh) if you need to preprocess `val` set.
+`test` is not used in this repository. Use [scripts/valprep.sh](scripts/valprep.sh) to make `val` in ImageFolder format.
 
 ### Prepare Docker container
 
@@ -89,9 +89,7 @@ top1,top1_err,top5,top5_err,param_count,img_size,cropt_pct,interpolation,layers_
 71.784,28.216,90.426,9.574,4.65,224,0.875,bicubic,"['blocks.0.0.conv_dw', 'blocks.0.0.act1']"
 73.956,26.044,91.572,8.428,4.65,224,0.875,bicubic,"['conv_stem', 'act1']"
 74.646,25.354,92.154,7.846,4.65,224,0.875,bicubic,"['blocks.1.0.conv_pw', 'blocks.1.0.act1']"
-.
-.
-.
+..
 ```
 
 To reproduce top1=74.646:
