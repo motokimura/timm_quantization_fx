@@ -1,3 +1,21 @@
+# timm_quantization_fx
+
+With this repository, you can quantize [pytorch-image-models (aka timm)](https://github.com/huggingface/pytorch-image-models)
+with PyTorch fx graph mode quantization:
+
+timm model | ImageNet top1 (fp32) | ImageNet top1 (int8)
+-- | -- | --
+mobilenetv2_100 | 72.972 | 66.342
+mobilenetv3_large_100 | 75.776 | 65.420
+efficientnet_lite0 | 75.482 | 70.000
+
+Currntly only the static post-training quantization is supported.
+
+Sensitivity analysis (and partial quantization) example is also provided.
+The figure below shows per-layer sensitivity analysis result of efficientnet_lite0 model.
+
+![](examples/efficientnet_lite0/plot.png)
+
 ## Setup
 
 ### Prepare ImageNet dataset
@@ -13,7 +31,7 @@ $ tree $HOME/data/imagenet -L 1
 └── val
 ```
 
-You may use [kaggle /imagenet-object-localization-challenge dataset](https://www.kaggle.com/competitions/imagenet-object-localization-challenge/data)
+You may use [kaggle imagenet-object-localization-challenge dataset](https://www.kaggle.com/competitions/imagenet-object-localization-challenge/data)
 to download ImageNet dataset.
 
 `test` is not used in this repository. Use [scripts/valprep.sh](scripts/valprep.sh) to make `val` in ImageFolder format.
@@ -105,5 +123,3 @@ $ python tools/validate.py /work/data/ --model efficientnet_lite0 --quant --laye
 ```
 $ python tools/plot_result.py -sa result_sensitivity_analysis.csv -pq result_partial_quantization.csv -ba 75.482
 ```
-
-![](examples/efficientnet_lite0/plot.png)
