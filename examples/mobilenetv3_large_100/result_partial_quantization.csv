@@ -1,0 +1,12 @@
+top1,top1_err,top5,top5_err,param_count,img_size,cropt_pct,interpolation,layers_not_quantized
+65.42,34.58,86.126,13.874,5.48,224,0.875,bicubic,[]
+68.572,31.428,88.348,11.652,5.48,224,0.875,bicubic,"['conv_stem', 'act1']"
+72.11,27.89,90.47,9.53,5.48,224,0.875,bicubic,['blocks.0.0.conv_dw']
+72.108,27.892,90.666,9.334,5.48,224,0.875,bicubic,"['blocks.4.0.conv_pw', 'blocks.4.0.act1']"
+73.206,26.794,91.176,8.824,5.48,224,0.875,bicubic,"['blocks.4.0.conv_dw', 'blocks.4.0.act2']"
+73.256,26.744,91.22,8.78,5.48,224,0.875,bicubic,"['blocks.3.1.conv_dw', 'blocks.3.1.act2']"
+73.384,26.616,91.2,8.8,5.48,224,0.875,bicubic,"['blocks.5.0.conv_pw', 'blocks.5.0.act1']"
+73.604,26.396,91.42,8.58,5.48,224,0.875,bicubic,"['blocks.5.0.conv_dw', 'blocks.5.0.act2']"
+74.146,25.854,91.564,8.436,5.48,224,0.875,bicubic,"['blocks.3.1.conv_pw', 'blocks.3.1.act1']"
+74.126,25.874,91.766,8.234,5.48,224,0.875,bicubic,"['blocks.5.2.conv_dw', 'blocks.5.2.act2']"
+74.15,25.85,91.738,8.262,5.48,224,0.875,bicubic,['blocks.1.0.conv_pw']
