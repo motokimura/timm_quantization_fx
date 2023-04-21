@@ -5,9 +5,10 @@ with PyTorch fx graph mode quantization:
 
 timm model | ImageNet top1 (fp32) | ImageNet top1 (int8)
 -- | -- | --
+efficientnet_lite0 | 75.482 | 70.000
 mobilenetv2_100 | 72.972 | 66.342
 mobilenetv3_large_100 | 75.776 | 65.420
-efficientnet_lite0 | 75.482 | 70.000
+resnet18 | 69.764 | 69.524
 
 Sensitivity analysis (and partial quantization) example is also provided.
 The figure below shows per-layer sensitivity analysis result of efficientnet_lite0 model.
