@@ -3,12 +3,12 @@
 With this repository, you can quantize [pytorch-image-models (aka timm)](https://github.com/huggingface/pytorch-image-models)
 with PyTorch fx graph mode quantization:
 
-timm model | ImageNet top1 (fp32) | ImageNet top1 (int8)
--- | -- | --
-efficientnet_lite0 | 75.482 | 70.000
-mobilenetv2_100 | 72.972 | 66.342
-mobilenetv3_large_100 | 75.776 | 65.420
-resnet18 | 69.764 | 69.524
+timm model | ImageNet top1 (fp32) | ImageNet top1 (int8) | params [M] (from [timm](https://github.com/huggingface/pytorch-image-models/blob/v0.4.12/results/results-imagenet.csv))
+-- | -- | -- | --
+efficientnet_lite0 | 75.482 | 70.000 | 4.65
+mobilenetv2_100 | 72.972 | 66.342 | 3.50
+mobilenetv3_large_100 | 75.776 | 65.420 | 5.48
+resnet18 | 69.764 | 69.524 | 11.69
 
 Sensitivity analysis (and partial quantization) example is also provided.
 The figure below shows per-layer sensitivity analysis result of efficientnet_lite0 model.
